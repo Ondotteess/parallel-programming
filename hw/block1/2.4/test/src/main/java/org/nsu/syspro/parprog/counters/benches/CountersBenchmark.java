@@ -5,6 +5,7 @@ import org.nsu.syspro.parprog.counters.impls.LockedCounter;
 import org.nsu.syspro.parprog.counters.impls.SplitCounter;
 import org.nsu.syspro.parprog.counters.impls.ThreadUnsafeCounter;
 import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.infra.Blackhole;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
@@ -28,7 +29,6 @@ public class CountersBenchmark {
         Split_1,
         Split_2,
         Split_10000;
-        // TODO: add more
 
         Counter createCounter() {
             switch (this) {
@@ -50,7 +50,6 @@ public class CountersBenchmark {
         }
     }
 
-    // Feel free to comment/uncomment to speed up the measurements
     @Param({
             "Unsafe",
             "Unfair",
@@ -60,46 +59,67 @@ public class CountersBenchmark {
             "Split_10000",
     })
     String counterType;
-    Counter counterInstance;
 
-    @Setup
+    private Counter counterInstance;
+
+    @Setup(Level.Trial)
     public void setup() {
         counterInstance = CounterType.valueOf(counterType).createCounter();
     }
-
     // endregion
 
-    // region increment
-    @Benchmark
-    @Threads(1)
+    // region increment-only
+    @Benchmark @Threads(1)
     public void inc1() {
         counterInstance.increment();
     }
 
-    @Benchmark
-    @Threads(2)
+    @Benchmark @Threads(2)
     public void inc2() {
         counterInstance.increment();
     }
 
-    @Benchmark
-    @Threads(4)
+    @Benchmark @Threads(4)
     public void inc4() {
         counterInstance.increment();
     }
 
-    @Benchmark
-    @Threads(Threads.MAX)
+    @Benchmark @Threads(Threads.MAX)
     public void incMax() {
         counterInstance.increment();
     }
+    // endregion
 
-    @Benchmark
-    @Threads(24) // should 2 * Threads.MAX
-    public void incMaxMax() {
-        counterInstance.increment();
+    // region get-only
+    @Benchmark @Threads(1)
+    public long get1() {
+        return counterInstance.get();
     }
-    //endregion
+
+    @Benchmark @Threads(2)
+    public long get2() {
+        return counterInstance.get();
+    }
+
+    @Benchmark @Threads(4)
+    public long get4() {
+        return counterInstance.get();
+    }
+
+    @Benchmark @Threads(Threads.MAX)
+    public long getMax() {
+        return counterInstance.get();
+    }
+    // endregion
+
+    // region DCE sanity (чтобы никто не ныл, что нагрузку оптимизировали)
+    // Это НЕ "inc-only", это отдельная проверка.
+    @Benchmark @Threads(Threads.MAX)
+    public void incThenRead_sink(Blackhole bh) {
+        counterInstance.increment();
+        bh.consume(counterInstance.get());
+    }
+    // endregion
 
     public static void main(String[] args) throws RunnerException {
         Options opt = new OptionsBuilder()

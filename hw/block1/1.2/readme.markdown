@@ -34,14 +34,14 @@ class B extends Thread {
 }
 ```
 
-Assume `main` thread `join`ed both thread `A` and thread `B`. Use interleaving model for formalization of possible and impossible execution traces. For every question below provide either concurrent execution trace (in the form `A.1->A.2->B.1 ...`) or proof of impossibility:
+Assume `two_threads1_6` thread `join`ed both thread `A` and thread `B`. Use interleaving model for formalization of possible and impossible execution traces. For every question below provide either concurrent execution trace (in the form `A.1->A.2->B.1 ...`) or proof of impossibility:
 
-- Could `main` thread observe `x == 1, r_y == 0, r_z == 0`?
-- Could `main` thread observe `x == 2, r_y == 0, r_z == 1`?
-- Could `main` thread observe `x == 1, r_y == 0, r_z == 1`?
+- Could `two_threads1_6` thread observe `x == 1, r_y == 0, r_z == 0`?
+- Could `two_threads1_6` thread observe `x == 2, r_y == 0, r_z == 1`?
+- Could `two_threads1_6` thread observe `x == 1, r_y == 0, r_z == 1`?
 
 **Hint.** Proof of impossibility could be structured in the following way:
-- assume there exists concurrent execution trace where `main` thread observes `var == N`
+- assume there exists concurrent execution trace where `two_threads1_6` thread observes `var == N`
 - then `event_a` happened earlier than `event_b`
 - then `event_b` happened earlier than `event_c`
 - but also, according to program order, `event_c` always happens earlier than `event_a`

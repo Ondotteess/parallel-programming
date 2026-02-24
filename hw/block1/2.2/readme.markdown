@@ -45,7 +45,7 @@ class ThreadB extends Thread {
     }
   }
 }
-static void main() {
+static void two_threads1_6() {
   Thread a = new ThreadA();
   Thread b = new ThreadB();
   a.start(); b.start();

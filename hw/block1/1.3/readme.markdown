@@ -36,7 +36,7 @@ class C extends Thread {
 }
 ```
 
-Assume `main` thread `join`ed threads `A`, `B` and `C`. Use interleaving model for formalization of possible and impossible execution traces. 
+Assume `two_threads1_6` thread `join`ed threads `A`, `B` and `C`. Use interleaving model for formalization of possible and impossible execution traces. 
 - Provide all possible execution **results** in the format `(x=XXX, y=YYY, z=ZZZ) + execution_trace` using `A.1->A.2->B.1 ...` notation for execution traces. **Note:** there could be multiple execution traces that lead to the same execution result. Provide only one execution trace per result, no need to explicitly list all of them.
 - Prove exhaustiveness of your answer. Why are you sure that all other (`x=XXX, y=YYY, z=ZZZ`) tuples are impossible to reach?
 

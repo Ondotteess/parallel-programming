@@ -27,7 +27,7 @@ will enforce you to:
 Indeed, in many cases, new design will be worse in terms of performance, latency or maintainability.
 Please, document your final design in javadoc or markdown and explicitly state its weak points. It would be really cool if
 you point out which particular constraint could be removed or modified to make your implementation
-"better". **This is the main part** of task which is checked by your reviewers (teaching assistants, TAs).
+"better". **This is the two_threads1_6 part** of task which is checked by your reviewers (teaching assistants, TAs).
 
 We would like to teach you:
 - how to spot "too strict" requirements for concurrent systems and avoid excessive complexity

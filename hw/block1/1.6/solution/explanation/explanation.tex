@@ -1,0 +1,315 @@
+\documentclass[12pt]{article}
+
+\usepackage[a4paper,margin=2cm]{geometry}
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{xcolor}
+\usepackage{listings}
+
+\lstset{
+  basicstyle=\ttfamily\footnotesize,
+  breaklines=true,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  frame=single,
+  tabsize=2
+}
+
+\newcommand{\keyline}[1]{%
+  \noindent\colorbox{yellow!25}{\parbox{\dimexpr\linewidth-2\fboxsep\relax}{\texttt{#1}}}%
+}
+
+\begin{document}
+
+\section{Task 1.6:}
+
+полный вывод \texttt{jstack}, ключевые фрагменты и короткое объяснение, почему дамп подтверждает дедлок.
+
+\section{ one\_thread }
+
+\subsection*{вывод jstack}
+
+\begin{lstlisting}
+PS C:\Users\dan> jps
+49268 one_thread
+50088 Jps
+50248 Main
+59848 Launcher
+PS C:\Users\dan> jstack 49268
+2026-02-23 04:34:17
+Full thread dump OpenJDK 64-Bit Server VM (11.0.30+7-LTS mixed mode, sharing):
+
+Threads class SMR info:
+_java_thread_list=0x000001b89b29ff80, length=11, elements={
+0x000001b8f6417800, 0x000001b89a763800, 0x000001b89a766800, 0x000001b89a783000,
+0x000001b89a784000, 0x000001b89a785800, 0x000001b89a788800, 0x000001b89a78b800,
+0x000001b89a78c800, 0x000001b89b030800, 0x000001b89b36f800
+}
+
+"main" #1 prio=5 os_prio=0 cpu=0.00ms elapsed=39.72s tid=0x000001b8f6417800 nid=0xdee4 in Object.wait()  [0x000000acbabff000]
+   java.lang.Thread.State: WAITING (on object monitor)
+        at java.lang.Object.wait(java.base@11.0.30/Native Method)
+        - waiting on <0x000000071a107ed8> (a java.lang.Thread)
+        at java.lang.Thread.join(java.base@11.0.30/Thread.java:1300)
+        - waiting to re-lock in wait() <0x000000071a107ed8> (a java.lang.Thread)
+        at java.lang.Thread.join(java.base@11.0.30/Thread.java:1375)
+        at one_thread.main(one_thread.java:3)
+
+"Reference Handler" #2 daemon prio=10 os_prio=2 cpu=0.00ms elapsed=39.70s tid=0x000001b89a763800 nid=0xc61c waiting on condition  [0x000000acbb2ff000]
+   java.lang.Thread.State: RUNNABLE
+        at java.lang.ref.Reference.waitForReferencePendingList(java.base@11.0.30/Native Method)
+        at java.lang.ref.Reference.processPendingReferences(java.base@11.0.30/Reference.java:241)
+        at java.lang.ref.Reference$ReferenceHandler.run(java.base@11.0.30/Reference.java:213)
+
+"Finalizer" #3 daemon prio=8 os_prio=1 cpu=0.00ms elapsed=39.70s tid=0x000001b89a766800 nid=0xca0c in Object.wait()  [0x000000acbb3ff000]
+   java.lang.Thread.State: WAITING (on object monitor)
+        at java.lang.Object.wait(java.base@11.0.30/Native Method)
+        - waiting on <0x000000071a10a2e0> (a java.lang.ref.ReferenceQueue$Lock)
+        at java.lang.ref.ReferenceQueue.remove(java.base@11.0.30/ReferenceQueue.java:155)
+        - waiting to re-lock in wait() <0x000000071a10a2e0> (a java.lang.ref.ReferenceQueue$Lock)
+        at java.lang.ref.ReferenceQueue.remove(java.base@11.0.30/ReferenceQueue.java:176)
+        at java.lang.ref.Finalizer$FinalizerThread.run(java.base@11.0.30/Finalizer.java:170)
+
+"Signal Dispatcher" #4 daemon prio=9 os_prio=2 cpu=0.00ms elapsed=39.69s tid=0x000001b89a783000 nid=0xdd28 runnable  [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+"Attach Listener" #5 daemon prio=5 os_prio=2 cpu=0.00ms elapsed=39.69s tid=0x000001b89a784000 nid=0xa564 waiting on condition  [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+"Service Thread" #6 daemon prio=9 os_prio=0 cpu=0.00ms elapsed=39.69s tid=0x000001b89a785800 nid=0xcdcc runnable  [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+"C2 CompilerThread0" #7 daemon prio=9 os_prio=2 cpu=15.62ms elapsed=39.69s tid=0x000001b89a788800 nid=0xa68c waiting on condition  [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+   No compile task
+
+"C1 CompilerThread0" #15 daemon prio=9 os_prio=2 cpu=0.00ms elapsed=39.69s tid=0x000001b89a78b800 nid=0xcb20 waiting on condition  [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+   No compile task
+
+"Sweeper thread" #19 daemon prio=9 os_prio=2 cpu=0.00ms elapsed=39.69s tid=0x000001b89a78c800 nid=0xa87c runnable  [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+"Common-Cleaner" #20 daemon prio=8 os_prio=1 cpu=0.00ms elapsed=39.66s tid=0x000001b89b030800 nid=0xadfc in Object.wait()  [0x000000acbbaff000]
+   java.lang.Thread.State: TIMED_WAITING (on object monitor)
+        at java.lang.Object.wait(java.base@11.0.30/Native Method)
+        - waiting on <0x000000071a008b80> (a java.lang.ref.ReferenceQueue$Lock)
+        at java.lang.ref.ReferenceQueue.remove(java.base@11.0.30/ReferenceQueue.java:155)
+        - waiting to re-lock in wait() <0x000000071a008b80> (a java.lang.ref.ReferenceQueue$Lock)
+        at jdk.internal.ref.CleanerImpl.run(java.base@11.0.30/CleanerImpl.java:148)
+        at java.lang.Thread.run(java.base@11.0.30/Thread.java:829)
+        at jdk.internal.misc.InnocuousThread.run(java.base@11.0.30/InnocuousThread.java:161)
+
+"Monitor Ctrl-Break" #21 daemon prio=5 os_prio=0 cpu=0.00ms elapsed=39.61s tid=0x000001b89b36f800 nid=0x2774 runnable  [0x000000acbbefe000]
+   java.lang.Thread.State: RUNNABLE
+        at java.net.SocketInputStream.socketRead0(java.base@11.0.30/Native Method)
+        at java.net.SocketInputStream.socketRead(java.base@11.0.30/SocketInputStream.java:115)
+        at java.net.SocketInputStream.read(java.base@11.0.30/SocketInputStream.java:168)
+        at java.net.SocketInputStream.read(java.base@11.0.30/SocketInputStream.java:140)
+        at sun.nio.cs.StreamDecoder.readBytes(java.base@11.0.30/StreamDecoder.java:295)
+        at sun.nio.cs.StreamDecoder.implRead(java.base@11.0.30/StreamDecoder.java:337)
+        at sun.nio.cs.StreamDecoder.read(java.base@11.0.30/StreamDecoder.java:179)
+        - locked <0x0000000719f05290> (a java.io.InputStreamReader)
+        at java.io.InputStreamReader.read(java.base@11.0.30/InputStreamReader.java:181)
+        at java.io.BufferedReader.fill(java.base@11.0.30/BufferedReader.java:161)
+        at java.io.BufferedReader.readLine(java.base@11.0.30/BufferedReader.java:326)
+        - locked <0x0000000719f05290> (a java.io.InputStreamReader)
+        at java.io.BufferedReader.readLine(java.base@11.0.30/BufferedReader.java:392)
+        at com.intellij.rt.execution.application.AppMainV2$1.run(AppMainV2.java:31)
+
+"VM Thread" os_prio=2 cpu=0.00ms elapsed=39.70s tid=0x000001b89a761800 nid=0x8c30 runnable
+
+"GC Thread#0" os_prio=2 cpu=0.00ms elapsed=39.72s tid=0x000001b8f6433000 nid=0xcce4 runnable
+
+"G1 Main Marker" os_prio=2 cpu=0.00ms elapsed=39.72s tid=0x000001b8f648c800 nid=0xf1f0 runnable
+
+"G1 Conc#0" os_prio=2 cpu=0.00ms elapsed=39.72s tid=0x000001b8f648e000 nid=0x4a80 runnable
+
+"G1 Refine#0" os_prio=2 cpu=0.00ms elapsed=39.71s tid=0x000001b89a676000 nid=0xe3b4 runnable
+
+"G1 Young RemSet Sampling" os_prio=2 cpu=0.00ms elapsed=39.71s tid=0x000001b89a677000 nid=0xbe48 runnable
+"VM Periodic Task Thread" os_prio=2 cpu=0.00ms elapsed=39.61s tid=0x000001b89b370800 nid=0xa7b8 waiting on condition
+
+JNI global refs: 24, weak refs: 0
+\end{lstlisting}
+
+\keyline{"main" ... java.lang.Thread.State: WAITING (on object monitor)}
+
+\keyline{at java.lang.Thread.join(...)}
+
+\keyline{at one\_thread.main(one\_thread.java:3)}
+
+\subsection*{почему это подтверждает дедлок}
+
+поток \texttt{main} находится в состоянии \texttt{WAITING} и блокируется внутри \texttt{Thread.join()}
+(\texttt{Thread.join(...)} и место вызова \texttt{one\_thread.java:3}).
+вызывается \texttt{Thread.currentThread().join()}, таким образом поток дожидается завершения самого себя.
+
+\newpage
+
+\section{ two\_threads }
+
+\subsection*{вывод jstack}
+
+\begin{lstlisting}
+PS C:\Users\dan> jps
+15472 Jps
+50248 Main
+52268 Launcher
+6604 two_threads1_6
+PS C:\Users\dan> jstack 6603
+6603: no such process
+PS C:\Users\dan> jstack 6604
+2026-02-23 04:37:59
+Full thread dump OpenJDK 64-Bit Server VM (11.0.30+7-LTS mixed mode, sharing):
+
+Threads class SMR info:
+_java_thread_list=0x0000014b23f98df0, length=13, elements={
+0x0000014b7f036000, 0x0000014b233e4000, 0x0000014b233e5800, 0x0000014b23402000,
+0x0000014b23403000, 0x0000014b23404000, 0x0000014b23409800, 0x0000014b2340b000,
+0x0000014b23425800, 0x0000014b23dd7000, 0x0000014b24027800, 0x0000014b24029000,
+0x0000014b23f0c000
+}
+
+"main" #1 prio=5 os_prio=0 cpu=31.25ms elapsed=69.37s tid=0x0000014b7f036000 nid=0xcad0 in Object.wait()  [0x0000003ce5aff000]
+   java.lang.Thread.State: WAITING (on object monitor)
+        at java.lang.Object.wait(java.base@11.0.30/Native Method)
+        - waiting on <0x0000000719f62150> (a java.lang.Thread)
+        at java.lang.Thread.join(java.base@11.0.30/Thread.java:1300)
+        - waiting to re-lock in wait() <0x0000000719f62150> (a java.lang.Thread)
+        at java.lang.Thread.join(java.base@11.0.30/Thread.java:1375)
+        at two_threads1_6.main(two_threads1_6.java:23)
+
+"Reference Handler" #2 daemon prio=10 os_prio=2 cpu=0.00ms elapsed=69.35s tid=0x0000014b233e4000 nid=0xf29c waiting on condition  [0x0000003ce61ff000]
+   java.lang.Thread.State: RUNNABLE
+        at java.lang.ref.Reference.waitForReferencePendingList(java.base@11.0.30/Native Method)
+        at java.lang.ref.Reference.processPendingReferences(java.base@11.0.30/Reference.java:241)
+        at java.lang.ref.Reference$ReferenceHandler.run(java.base@11.0.30/Reference.java:213)
+
+"Finalizer" #3 daemon prio=8 os_prio=1 cpu=0.00ms elapsed=69.34s tid=0x0000014b233e5800 nid=0x9e4c in Object.wait()  [0x0000003ce62ff000]
+   java.lang.Thread.State: WAITING (on object monitor)
+        at java.lang.Object.wait(java.base@11.0.30/Native Method)
+        - waiting on <0x000000071a10a2e0> (a java.lang.ref.ReferenceQueue$Lock)
+        at java.lang.ref.ReferenceQueue.remove(java.base@11.0.30/ReferenceQueue.java:155)
+        - waiting to re-lock in wait() <0x000000071a10a2e0> (a java.lang.ref.ReferenceQueue$Lock)
+        at java.lang.ref.ReferenceQueue.remove(java.base@11.0.30/ReferenceQueue.java:176)
+        at java.lang.ref.Finalizer$FinalizerThread.run(java.base@11.0.30/Finalizer.java:170)
+
+"Signal Dispatcher" #4 daemon prio=9 os_prio=2 cpu=0.00ms elapsed=69.33s tid=0x0000014b23402000 nid=0x6704 runnable  [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+"Attach Listener" #5 daemon prio=5 os_prio=2 cpu=0.00ms elapsed=69.33s tid=0x0000014b23403000 nid=0xee30 waiting on condition  [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+"Service Thread" #6 daemon prio=9 os_prio=0 cpu=0.00ms elapsed=69.33s tid=0x0000014b23404000 nid=0xe0e0 runnable  [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+"C2 CompilerThread0" #7 daemon prio=9 os_prio=2 cpu=46.88ms elapsed=69.33s tid=0x0000014b23409800 nid=0xddb4 waiting on condition  [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+   No compile task
+
+"C1 CompilerThread0" #15 daemon prio=9 os_prio=2 cpu=0.00ms elapsed=69.33s tid=0x0000014b2340b000 nid=0x45a4 waiting on condition  [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+   No compile task
+
+"Sweeper thread" #19 daemon prio=9 os_prio=2 cpu=0.00ms elapsed=69.33s tid=0x0000014b23425800 nid=0xf2e0 runnable  [0x0000000000000000]
+   java.lang.Thread.State: RUNNABLE
+
+"Common-Cleaner" #20 daemon prio=8 os_prio=1 cpu=0.00ms elapsed=69.29s tid=0x0000014b23dd7000 nid=0xb5b4 in Object.wait()  [0x0000003ce69ff000]
+   java.lang.Thread.State: TIMED_WAITING (on object monitor)
+        at java.lang.Object.wait(java.base@11.0.30/Native Method)
+        - waiting on <0x000000071a008b80> (a java.lang.ref.ReferenceQueue$Lock)
+        at java.lang.ref.ReferenceQueue.remove(java.base@11.0.30/ReferenceQueue.java:155)
+        - waiting to re-lock in wait() <0x000000071a008b80> (a java.lang.ref.ReferenceQueue$Lock)
+        at jdk.internal.ref.CleanerImpl.run(java.base@11.0.30/CleanerImpl.java:148)
+        at java.lang.Thread.run(java.base@11.0.30/Thread.java:829)
+        at jdk.internal.misc.InnocuousThread.run(java.base@11.0.30/InnocuousThread.java:161)
+
+"Monitor Ctrl-Break" #21 daemon prio=5 os_prio=0 cpu=0.00ms elapsed=69.22s tid=0x0000014b24027800 nid=0x46f8 runnable  [0x0000003ce6dfe000]
+   java.lang.Thread.State: RUNNABLE
+        at java.net.SocketInputStream.socketRead0(java.base@11.0.30/Native Method)
+        at java.net.SocketInputStream.socketRead(java.base@11.0.30/SocketInputStream.java:115)
+        at java.net.SocketInputStream.read(java.base@11.0.30/SocketInputStream.java:168)
+        at java.net.SocketInputStream.read(java.base@11.0.30/SocketInputStream.java:140)
+        at sun.nio.cs.StreamDecoder.readBytes(java.base@11.0.30/StreamDecoder.java:295)
+        at sun.nio.cs.StreamDecoder.implRead(java.base@11.0.30/StreamDecoder.java:337)
+        at sun.nio.cs.StreamDecoder.read(java.base@11.0.30/StreamDecoder.java:179)
+        - locked <0x0000000719f88ba0> (a java.io.InputStreamReader)
+        at java.io.InputStreamReader.read(java.base@11.0.30/InputStreamReader.java:181)
+        at java.io.BufferedReader.fill(java.base@11.0.30/BufferedReader.java:161)
+        at java.io.BufferedReader.readLine(java.base@11.0.30/BufferedReader.java:326)
+        - locked <0x0000000719f88ba0> (a java.io.InputStreamReader)
+        at java.io.BufferedReader.readLine(java.base@11.0.30/BufferedReader.java:392)
+        at com.intellij.rt.execution.application.AppMainV2$1.run(AppMainV2.java:31)
+
+"Thread-0" #22 prio=5 os_prio=0 cpu=0.00ms elapsed=69.21s tid=0x0000014b24029000 nid=0xb6cc in Object.wait()  [0x0000003ce6fff000]
+   java.lang.Thread.State: WAITING (on object monitor)
+        at java.lang.Object.wait(java.base@11.0.30/Native Method)
+        - waiting on <0x0000000719f65220> (a java.lang.Thread)
+        at java.lang.Thread.join(java.base@11.0.30/Thread.java:1300)
+        - waiting to re-lock in wait() <0x0000000719f65220> (a java.lang.Thread)
+        at java.lang.Thread.join(java.base@11.0.30/Thread.java:1375)
+        at two_threads1_6.lambda$main$0(two_threads1_6.java:10)
+        at two_threads1_6$$Lambda$14/0x0000000840064840.run(Unknown Source)
+        at java.lang.Thread.run(java.base@11.0.30/Thread.java:829)
+
+"Thread-1" #23 prio=5 os_prio=0 cpu=0.00ms elapsed=69.21s tid=0x0000014b23f0c000 nid=0xa4a4 in Object.wait()  [0x0000003ce70ff000]
+   java.lang.Thread.State: WAITING (on object monitor)
+        at java.lang.Object.wait(java.base@11.0.30/Native Method)
+        - waiting on <0x0000000719f62150> (a java.lang.Thread)
+        at java.lang.Thread.join(java.base@11.0.30/Thread.java:1300)
+        - waiting to re-lock in wait() <0x0000000719f62150> (a java.lang.Thread)
+        at java.lang.Thread.join(java.base@11.0.30/Thread.java:1375)
+        at two_threads1_6.lambda$main$1(two_threads1_6.java:16)
+        at two_threads1_6$$Lambda$15/0x0000000840064c40.run(Unknown Source)
+        at java.lang.Thread.run(java.base@11.0.30/Thread.java:829)
+
+"VM Thread" os_prio=2 cpu=0.00ms elapsed=69.35s tid=0x0000014b233e2000 nid=0xdf18 runnable
+
+"GC Thread#0" os_prio=2 cpu=0.00ms elapsed=69.36s tid=0x0000014b7f051000 nid=0xe9d0 runnable
+
+"G1 Main Marker" os_prio=2 cpu=0.00ms elapsed=69.36s tid=0x0000014b7f0aa800 nid=0xec8c runnable
+
+"G1 Conc#0" os_prio=2 cpu=0.00ms elapsed=69.36s tid=0x0000014b7f0ac800 nid=0xb118 runnable
+
+"G1 Refine#0" os_prio=2 cpu=0.00ms elapsed=69.36s tid=0x0000014b232f5000 nid=0xe12c runnable
+
+"G1 Young RemSet Sampling" os_prio=2 cpu=0.00ms elapsed=69.36s tid=0x0000014b232f6000 nid=0x9aa4 runnable
+"VM Periodic Task Thread" os_prio=2 cpu=15.62ms elapsed=69.22s tid=0x0000014b24028800 nid=0x8448 waiting on condition
+
+JNI global refs: 24, weak refs: 0
+
+PS C:\Users\dan>
+\end{lstlisting}
+
+\subsection*{места, по которым видно дедлок}
+
+\keyline{"Thread-0" ... java.lang.Thread.State: WAITING (on object monitor)}
+
+\keyline{at java.lang.Thread.join(...)}
+
+\keyline{at two\_threads.lambda\$main\$0(two\_threads.java:10)}
+
+\vspace{0.3cm}
+
+\keyline{"Thread-1" ... java.lang.Thread.State: WAITING (on object monitor)}
+
+\keyline{at java.lang.Thread.join(...)}
+
+\keyline{at two\_threads.lambda\$main\$1(two\_threads.java:16)}
+
+\subsection*{почему это подтверждает дедлок}
+
+\texttt{Thread-0} и \texttt{Thread-1} одновременно находятся в состоянии \texttt{WAITING}
+и оба блокируются внутри \texttt{Thread.join()} (\texttt{Thread.join(...)}).
+\texttt{Thread-0} ( \texttt{two\_threads.java:10}) ожидает завершения \texttt{Thread-1},
+а \texttt{Thread-1} ( \texttt{two\_threads.java:16}) ожидает завершения \texttt{Thread-0}.
+так образуется цикл ожидания в графе зависимостей:
+
+\begin{center}
+\texttt{Thread-0} $\rightarrow$ \texttt{Thread-1} $\rightarrow$ \texttt{Thread-0}
+\end{center}
+
+\end{document}
