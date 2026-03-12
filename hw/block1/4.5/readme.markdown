@@ -1,8 +1,8 @@
-# Task 1.5
+# Task 4.5
 
 ## Description
 
-Open [deadlockempire.github.io](https://deadlockempire.github.io), pass all levels up to `Confused counter`, inclusive.
+Open [deadlockempire.github.io](https://deadlockempire.github.io), pass all levels.
 
 ## Requirements
 
