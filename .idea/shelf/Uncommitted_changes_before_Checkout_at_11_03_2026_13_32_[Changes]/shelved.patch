@@ -1,0 +1,35 @@
+Index: hw/block1/1.6/solution/src/main/java/one_thread.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>public class one_thread {\r\n    public static void main(String[] args) throws Exception {\r\n        Thread.currentThread().join();\r\n    }\r\n}\r\n
+===================================================================
+diff --git a/hw/block1/1.6/solution/src/main/java/one_thread.java b/hw/block1/1.6/solution/src/main/java/one_thread.java
+--- a/hw/block1/1.6/solution/src/main/java/one_thread.java	(revision 328c26e7faaec859f16b7c6ccf46795cff729dfa)
++++ b/hw/block1/1.6/solution/src/main/java/one_thread.java	(date 1773210614183)
+@@ -1,3 +1,5 @@
++package main.java;
++
+ public class one_thread {
+     public static void main(String[] args) throws Exception {
+         Thread.currentThread().join();
+Index: hw/block1/1.6/solution/src/main/java/two_threads1_6.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>public class two_threads1_6 {\r\n\r\n    static Thread A;\r\n    static Thread B;\r\n\r\n    public static void main(String[] args) throws Exception {\r\n\r\n        A = new Thread(() -> {\r\n            try {\r\n                B.join();\r\n            } catch (InterruptedException e) {\r\n            }\r\n        });\r\n\r\n        B = new Thread(() -> {\r\n            try {\r\n                A.join();\r\n            } catch (InterruptedException e) {\r\n            }\r\n        });\r\n\r\n        A.start();\r\n        B.start();\r\n\r\n        A.join();\r\n        B.join();\r\n    }\r\n}
+===================================================================
+diff --git a/hw/block1/1.6/solution/src/main/java/two_threads1_6.java b/hw/block1/1.6/solution/src/main/java/two_threads1_6.java
+--- a/hw/block1/1.6/solution/src/main/java/two_threads1_6.java	(revision 328c26e7faaec859f16b7c6ccf46795cff729dfa)
++++ b/hw/block1/1.6/solution/src/main/java/two_threads1_6.java	(date 1773210684605)
+@@ -1,9 +1,11 @@
++package main.java;
++
+ public class two_threads1_6 {
+ 
+     static Thread A;
+     static Thread B;
+ 
+-    public static void main(String[] args) throws Exception {
++    static void main(String[] args) throws Exception {
+ 
+         A = new Thread(() -> {
+             try {
